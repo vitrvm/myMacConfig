@@ -1,0 +1,33 @@
+name: Update Agnoster theme
+
+on:
+  schedule:
+    - cron: '17 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Merge upstream Agnoster changes
+        run: ./scripts/update-agnoster-upstream.sh
+
+      - name: Open update pull request
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: automation/update-agnoster
+          delete-branch: true
+          title: 'Update San Ciprian from upstream Agnoster'
+          commit-message: 'Update San Ciprian from upstream Agnoster'
+          body: |
+            This PR merges non-conflicting changes from the latest Oh My Zsh Agnoster theme into San Ciprian and advances the recorded upstream baseline.
+
+            Please review the prompt behavior before merging. The workflow leaves the repository unchanged when the three-way merge conflicts or the theme fails Zsh syntax validation.
